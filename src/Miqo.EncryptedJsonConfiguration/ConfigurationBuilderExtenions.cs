@@ -49,7 +49,7 @@ namespace Miqo.EncryptedJsonConfiguration
         /// <param name="optional">Whether the file is optional.</param>
         /// <param name="reloadOnChange">Whether the configuration should be reloaded if the file changes.</param>
         /// <param name="key">The encryption key</param>
-        /// <returns>The <see cref="AddEncryptedJsonFile"/>.</returns>
+        /// <returns>The <see cref="IConfigurationBuilder"/>.</returns>
         public static IConfigurationBuilder AddJsonFile(this IConfigurationBuilder builder, string path, bool optional, bool reloadOnChange, byte[] key)
         {
             return AddEncryptedJsonFile(builder, provider: null, path: path, optional: optional, reloadOnChange: reloadOnChange, key: key);

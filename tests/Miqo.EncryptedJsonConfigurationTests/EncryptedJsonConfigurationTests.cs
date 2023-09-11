@@ -54,7 +54,7 @@ namespace Miqo.EncryptedJsonConfigurationTests
 
             var cipher = Convert.FromBase64String(AesEncryptionHelpers.Encrypt<AppSettings>(settings, encryptionKey));
             using var stream = new MemoryStream(cipher);
-            Assert.Throws<CryptographicException>(() =>
+            Assert.Throws<FormatException>(() =>
             {
                 var configuration = new ConfigurationBuilder()
                     .AddEncryptedJsonStream(stream, incorrectKey)

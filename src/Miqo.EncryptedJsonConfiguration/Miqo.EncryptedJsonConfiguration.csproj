@@ -28,4 +28,8 @@ Use encrypted JSON file with this configuration provider for .NET Core's Microso
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="CryptHash.Net" Version="3.6.1" />
+  </ItemGroup>
+
 </Project>

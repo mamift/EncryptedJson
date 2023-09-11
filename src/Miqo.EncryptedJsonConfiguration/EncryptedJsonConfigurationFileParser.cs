@@ -23,7 +23,9 @@ namespace Miqo.EncryptedJsonConfiguration
         private string _currentPath;
 
         public static IDictionary<string, string> Parse(Stream input)
-            => new EncryptedJsonConfigurationFileParser().ParseStream(input);
+        {
+            return new EncryptedJsonConfigurationFileParser().ParseStream(input);
+        }
 
         private IDictionary<string, string> ParseStream(Stream input)
         {

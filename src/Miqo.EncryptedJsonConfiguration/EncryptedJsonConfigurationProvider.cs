@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using CryptHash.Net.Encryption.AES.AEAD;
 
 namespace Miqo.EncryptedJsonConfiguration
 {
@@ -32,7 +33,8 @@ namespace Miqo.EncryptedJsonConfiguration
                 var aes = new AEAD_AES_256_GCM();
                 var settings = aes.DecryptString(text, source.Key);
 
-                Data = EncryptedJsonConfigurationFileParser.Parse(new MemoryStream(settings));
+                var decryptedStream = new MemoryStream(settings.DecryptedDataBytes);
+                Data = EncryptedJsonConfigurationFileParser.Parse(decryptedStream);
             }
             catch (JsonException e)
             {
@@ -54,7 +56,8 @@ namespace Miqo.EncryptedJsonConfiguration
                 var aes = new AEAD_AES_256_GCM();
                 var settings = aes.DecryptString(encryptedSettings, source.Key);
 
-                Data = EncryptedJsonConfigurationFileParser.Parse(new MemoryStream(settings));
+                var decryptedStream = new MemoryStream(settings.DecryptedDataBytes);
+                Data = EncryptedJsonConfigurationFileParser.Parse(decryptedStream);
             }
             catch (JsonException e)
             {

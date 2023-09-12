@@ -1,8 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using CryptHash.Net;
+using CryptHash.Net.Encryption.AES.AEAD;
+using Microsoft.Extensions.Configuration.Json;
+using RegExtract;
 
 namespace Miqo.EncryptedJsonConfiguration
 {
@@ -29,11 +33,24 @@ namespace Miqo.EncryptedJsonConfiguration
             {
                 var encryptedSettings = stream.ToBytes();
                 var aes = new AEAD_AES_256_GCM();
-                var settings = aes.DecryptString(encryptedSettings, source.Key);
+                var decryptionResult = aes.DecryptString(encryptedSettings, source.Key);
 
-                Data = EncryptedJsonConfigurationFileParser.Parse(new MemoryStream(settings));
+                if (!decryptionResult.Success) {
+                    var message = decryptionResult.Message.Split(Environment.NewLine);
+                    var (exceptionName, exceptionMessage) = 
+                        decryptionResult.Message.Extract<(string exceptionName, string exceptionMessage)>(@"([\w\.]+Exception\:)([\w\s]+\.)");
+                    exceptionName = exceptionName.TrimEnd(':');
+
+                    if (exceptionName == typeof(CryptographicException).FullName) {
+                        throw new CryptographicException(exceptionMessage.Trim() + 
+                        $"{Environment.NewLine}NOTE: This exception is a newly allocated one without the original stack trace as the CryptHash library swallows the original and only forwards the message.");
+                    }
+                }
+
+                var decryptedStream = new MemoryStream(decryptionResult.DecryptedDataBytes);
+                Data = EncryptedJsonConfigurationFileParser.Parse(decryptedStream);
             }
-            catch (JsonException e)
+            catch (Exception e)
             {
                 throw new FormatException("Could not parse the encrypted JSON stream", e);
             }

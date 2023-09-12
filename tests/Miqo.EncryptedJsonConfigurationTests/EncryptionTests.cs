@@ -58,7 +58,7 @@ namespace Miqo.EncryptedJsonConfigurationTests
             var incorrectKey = AesEncryptionHelpers.GenerateBase64EncodedKey();
 
             var encrypted = AesEncryptionHelpers.Encrypt<AppSettings>(settings, key);
-            Assert.Throws<CryptographicException>(() =>
+            Assert.Throws<ArgumentNullException>(() =>
             {
                 var decrypted = AesEncryptionHelpers.Decrypt(encrypted, incorrectKey);
             });

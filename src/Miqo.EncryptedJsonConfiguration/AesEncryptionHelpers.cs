@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 using CryptHash.Net;
+using CryptHash.Net.Encryption.AES.AEAD;
+using CryptHash.Net.Util;
 
 namespace Miqo.EncryptedJsonConfiguration
 {
@@ -45,7 +47,8 @@ namespace Miqo.EncryptedJsonConfiguration
                 throw new ArgumentNullException(nameof(key));
 
             var aes = new AEAD_AES_256_GCM();
-            return Convert.ToBase64String(aes.EncryptString(text, key));
+            var encryptionResult = aes.EncryptString(text, key);
+            return Convert.ToBase64String(encryptionResult.EncryptedDataBytes);
         }
 
         /// <summary>
@@ -63,7 +66,8 @@ namespace Miqo.EncryptedJsonConfiguration
                 throw new ArgumentNullException(nameof(key));
 
             var aes = new AEAD_AES_256_GCM();
-            return Convert.ToBase64String(aes.EncryptString(text, key));
+            var encryptionResult = aes.EncryptString(text, key);
+            return Convert.ToBase64String(encryptionResult.EncryptedDataBytes);
         }
 
         /// <summary>
@@ -119,7 +123,8 @@ namespace Miqo.EncryptedJsonConfiguration
                 throw new ArgumentNullException(nameof(key));
             
             var aes = new AEAD_AES_256_GCM();
-            return Encoding.UTF8.GetString(aes.DecryptString(cipher, key));
+            var decryptionResult = aes.DecryptString(cipher, key);
+            return Encoding.UTF8.GetString(decryptionResult.DecryptedDataBytes);
         }
 
         /// <summary>
@@ -137,7 +142,8 @@ namespace Miqo.EncryptedJsonConfiguration
                 throw new ArgumentNullException(nameof(key));
 
             var aes = new AEAD_AES_256_GCM();
-            return Encoding.UTF8.GetString(aes.DecryptString(cipher, key));
+            var decryptionResult = aes.DecryptString(cipher, key);
+            return Encoding.UTF8.GetString(decryptionResult.DecryptedDataBytes);
         }
     }
 }

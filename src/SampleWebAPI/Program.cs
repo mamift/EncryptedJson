@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,16 +19,19 @@ namespace SampleWebAPI
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) {
-            //var key = Convert.FromBase64String(Environment.GetEnvironmentVariable("SECRET_SAUCE"));
-            var key = Convert.FromBase64String("A4HKnoCR/bdUOhogBi3EJpsEboYabtTy010eAoV8wKA=");
+            var vars = Environment.GetEnvironmentVariables().Cast<DictionaryEntry>()
+                .OrderBy(d => d.Key.ToString())
+                .ToDictionary(k => k.Key.ToString(), v => v.Value?.ToString());
+            var keyFromEnv = vars["Key"];
+
+            if (string.IsNullOrWhiteSpace(keyFromEnv)) throw new InvalidOperationException("No key provided!");
+            var key = Convert.FromBase64String(keyFromEnv);
 
             return Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((hostingContext, config) =>
-                {
+                .ConfigureAppConfiguration((hostingContext, config) => {
                     config.AddEncryptedJsonFile("settings.ejson", key);
                 })
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
+                .ConfigureWebHostDefaults(webBuilder => {
                     webBuilder.UseStartup<Startup>();
                 });
         }

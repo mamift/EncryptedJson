@@ -1,9 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Security.Authentication;
-using System.Security.Cryptography;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 
 namespace Miqo.EncryptedJsonConfiguration
@@ -68,17 +65,10 @@ namespace Miqo.EncryptedJsonConfiguration
         /// <returns>The <see cref="IConfigurationBuilder"/>.</returns>
         public static IConfigurationBuilder AddEncryptedJsonFile(this IConfigurationBuilder builder, IFileProvider provider, string path, bool optional, bool reloadOnChange, byte[] key)
         {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-            if (string.IsNullOrEmpty(path))
-            {
-                throw new ArgumentException("File path must be a non-empty string", nameof(path));
-            }
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            if (string.IsNullOrEmpty(path)) throw new ArgumentException("File path must be a non-empty string", nameof(path));
 
-            return builder.AddEncryptedJsonFile(s =>
-            {
+            return builder.AddEncryptedJsonFile(s => {
                 s.FileProvider = provider;
                 s.Path = path;
                 s.Optional = optional;
@@ -93,10 +83,11 @@ namespace Miqo.EncryptedJsonConfiguration
         /// </summary>
         /// <param name="builder">The <see cref="IConfigurationBuilder"/> to add to.</param>
         /// <param name="configureSource">Configures the source.</param>
-        /// <param name="key">The encryption key</param>
         /// <returns>The <see cref="IConfigurationBuilder"/>.</returns>
         public static IConfigurationBuilder AddEncryptedJsonFile(this IConfigurationBuilder builder, Action<EncryptedJsonConfigurationSource> configureSource)
-            => builder.Add(configureSource);
+        {
+            return builder.Add(configureSource);
+        }
 
         /// <summary>
         /// Adds a JSON configuration source to <paramref name="builder"/>.
@@ -107,13 +98,9 @@ namespace Miqo.EncryptedJsonConfiguration
         /// <returns>The <see cref="IConfigurationBuilder"/>.</returns>
         public static IConfigurationBuilder AddEncryptedJsonStream(this IConfigurationBuilder builder, Stream stream, byte[] key)
         {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
 
-            return builder.Add<EncryptedJsonStreamConfigurationSource>(s =>
-            {
+            return builder.Add<EncryptedJsonStreamConfigurationSource>(s => {
                 s.Stream = stream;
                 s.Key = key;
             });
